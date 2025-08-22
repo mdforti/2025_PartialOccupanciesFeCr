@@ -205,9 +205,47 @@ This makes the determination of the elastic tensor of the non-symmetrical tricli
   }
 \end{figure}
 
+\subsection{Machine learning extension of the sample space}
 
+So far, we gained an approximated idea of the effect of partial occupancy on the elastic constants of the Cr--Fe \textsigma ~ phase.
+However, the configuration space is only partially explored, and the 50 samples chosen for explicit elastic constant calculations is probably far from being statistically significant for the around 100k samples of the full configurational space. 
+
+At the same time, the already performed calculations can give us valuable information about the compound after symmetry has been broken by partial occupancy. 
+Valuable information about force-stress-displacement relationships can be extracted from the already performed DFT calculations which can be used to train a machine learning interatomic potential (MLIP) with a high degree of specificity. 
+In this direction, we extend our dft dataset by including not only optimization and elastic constnats calculations already analyzed, but also nearest neighbour (NN) expansions of the bcc, fcc, and hcp unary unit cells of the constitutents (Fe and Cr) and random deformations including isotropic compresion and expansions and atom-position shaking.
+The calculaton cost of this extension is much lower than the explicit calculation of elastic constants for probably hundreds of samples in the combinatorial exploration.
+The resulting energy - NN relationship is shown in \autoref{fig:DFTDataset}.
+We perform a ACE\MFnew{[ref ACE]} potential fitting using python-ace\MFnew{[ref pace]} package.
+The distributions of the target variables (energies, forces, stresses) are shown in the supplementary material, as well as the fitting detapace.
+
+The final potential can approximate our DFT formation energies with a relatively low error, as shown in \MFnew{Figure}.
+
+\begin{figure}[H]
+  \includegraphics[width=\textwidth]{Figure_DFTDataset.pdf}
+  \caption{\protect\label{fig:DFTDataset}
+		DFT dataset used to train the MLIP.
+		The dataset includes unary unit cells, random deformations, and elastic constant calculations.
+		The energy - NN relationship is shown in the right panel.
+	}
+
+\end{figure}
+
+\begin{figure}
+  \includegraphics[width=0.6\textwidth]{Figure_GRACE_potential_prediction.pdf}
+  \includegraphics[width=0.3\textwidth]{example-image-a}
+
+  \caption{\protect\label{fig:MLIPPrediction}
+    (a) Comparison between DFT and MLIP formation energies for the Fe-Cr \textsigma~phase. 
+    The upper pannel shows the distribution of the DFT formation energies on the PO samples from DFT calculatiosn (blue) and the GRACE potential (purple). 
+    For the latter, the full configuration space was calculated.
+   In the lower panel, the parity plot between the FO, PO, and validation sets is shown. An RMSE = \MFnew{show rmse} is obtained for the predictions. 
+   (b) Elastic constants for the validation set. 
+	}
+
+\end{figure}
 
 \section{Conclusion}
+
 In this work, we are presenting a methodical study of the effects of partial occupancy in the properties of the \textsigma phase of the FeCr system.
 For the first time, the properties of this phase are calculated taking into account the experimentally observed partial occupancies.
 We demonstrate that partial occupancy significantly influences the mechanical response of the \textsigma-phase, which cannot be captured by the traditional full sublattice models.
