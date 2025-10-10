@@ -1,0 +1,13 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc}
+
+\begin{document}
+
+\begin{tikzpicture}[every node/.style={anchor=center, draw}]
+  \node (A) at (0,0) {DFT0};
+  \node  (B) at ( $(A.south) + (0, -2cm)$ ) {Potential Fitting};
+\end{tikzpicture}
+
+\end{document}
+
