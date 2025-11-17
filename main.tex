@@ -27,7 +27,7 @@
 \usepackage{multirow}
 \usepackage{booktabs}
 \usepackage[LGR,T1]{fontenc}
-\usepackage[utf8x]{inputenc}
+\usepackage[utf8]{inputenc}
 \usepackage{textalpha}
 \usepackage{ulem}
 \usepackage{textcomp}
@@ -75,7 +75,8 @@ This is an intermetallic compound with a tetragonal structure (space group \text
 Understanding its properties is essential for predicting its mechanical behavior and phase stability.
 There are different approaches to similar problems in atomistic simulations, based for instance on Density Functional Theory (DFT).
 Vesti et. al. ~\cite{vesti_ab-initio_2023} utilize a  sublattice model later averaged under the compound energy formalism \MFnew{[missing ref]} to interpolate the properties of a W-Re \textsigma-phase.
-Kabliman et. al. ~\cite{kabliman_ab_2012} use a mean field approximation to study several properties of the \textsigma-phase in other binary systems, also based on full occupancy of the sublattices.
+Kabliman et. al.\cite{kabliman_ab_2012}
+use a mean field approximation to study several properties of the \textsigma-phase in other binary systems, also based on full occupancy of the sublattices.
 \MFnew{This methodologies were deviced several years ago, when a full study in the composition and configuration space was not plausible0}.
 \MFnew{Their underlying intention was to approximate a disordered structure with a finite set of oredered unit cells}.
 These approximations may overlook local atomic configuration effects.
@@ -86,7 +87,7 @@ We focus on a Fe\textsubscript{16}Cr\textsubscript{14} unit cell which can be mo
   \subcaptionbox{\protect\label{fig:sigmaUnitCell001}}{\includegraphics[height=4cm]{Figure_SigmaPhase001.png}}
   \subcaptionbox{\protect\label{fig:sigmaUnitCell100}}{\includegraphics[height=4cm]{example-image-b}}
   \caption{\protect\label{fig:introduction}
-    (\subref{fig:sigmaUnitCell001}) (001) and (\subref{fig:sigmaUnitCell100}) (100) views of the σ phase unit cell.
+    (\subref{fig:sigmaUnitCell001}) (001) and (\subref{fig:sigmaUnitCell100}) (100) views of the \textsigma-phase unit cell.
     Wyckoff sites are encoded in colors: 2\textit{a} is light blue,
     4\textit{f} in grey, 8\textit{i} in green, 8\textit{i'} in gold, 8\textit{j} in blue.
   }
@@ -98,24 +99,67 @@ We employ first-principles DFT calculations to determine the elastic constants o
 First, we study the change of elastic constants with composition under a full site occupancy approximation.
 Then, we focus on a nominal composition of Fe\textsubscript{16}Cr\textsubscript{14} (48\%at. Cr) to study the effect of partial occupancy explicitly.
 These calculations are conducted using the Vienna Ab initio Simulation Package (VASP) ~\cite{Hafner_vasp}, utilizing the Perdew-Burke-Ernzerhof (PBE) ~\cite{Perdew1996} exchange-correlation functional and the Projector Augmented Wave (PAW) method ~\cite{Bloch1994, kresse_ultrasoft_1999}.
-The elastic tensor is derived from stress-strain relationships obtained via energy-strain calculations~\cite{golesorkhtabar_elastic_2013}.
 \MFnew{
-\paragraph{Magnetic ordering} The \textsigma-phase in the Fe-Cr is stable at high temperatures and and is observed paramagnetic at both high and room temperatures after quenching \MFnewMissRef. Therefore, we calculate elastic constants from non spin polarized calculations only, although the influence of magnetic transitions in mechanical properties will be studied later. 
+\paragraph{Magnetic ordering} The \textsigma-phase in the Fe-Cr is stable at high temperatures and and is observed paramagnetic at both high and room temperatures after quenching \MFnewMissRef. 
+Therefore, we calculate elastic constants from non spin polarized calculations only, although the influence of magnetic transitions in mechanical properties will be studied later. 
 }
 
-\paragraph{Full occupancy}
-
-First, we calculate the properties of the \textsigma-phase using a sublattice model.
+\paragraph{Full occupancy}\label{methodology:fo} First, we calculate the properties of the \textsigma-phase using a sublattice model.
 This means, that the lattice positions of a WS are occupied either by Cr or Fe.
-We calculate formation enthalpies and elastic constants for all the possible configurations spanning the full composition range.
+This way we calculate  2\textsuperscript{5} = 32 ordered structures. 
+These so-called end-member configurations can be used to find the optimal site occupancy and Gibbs free energy at any finite temperature for any nominal Fe (or Cr) composition $x$ using the compound energy formalism (CEF) ~\cite{dupin_using_2006, crivello_first_2009, zhang_prediction_2025}.
+Here, the occupancy of an element $i$ in a sublattice $s$ is defined in terms of the number of atoms $N_i ^s$ in the sublattice,
 
-\paragraph{Partial occupancy} To capture the impact of atomic disorder, we explicitly explore all possible atomic arrangements within the \textsigma-phase unit cell, incorporating experimentally reported partial occupancy of WS by Yakel~\cite{yakel_atom_1983} as reproduced in \autoref{fig:PartialOccupancies}.  
+\begin{equation}\label{eqn:occupancy}
+  y_i ^s = \dfrac{N_i ^s}{\sum _j N_j ^s}
+\end{equation}
+
+\noindent and can be calculated from an optimization problem which minimizes the weighted Gibbs free energy \cite{zhang_prediction_2025}. 
+In this approach, the Gibbs free energy is usually derived from a Gorsky-Bragg-Williams approximation without excess terms\cite{gorsky_rontgenographische_1928,bragg_effect_1997,chizhikov_gorsky-bragg-williams_2000}.
+In particular for \textsigma-phase,
+
+\begin{align}\label{eqn:CEF}
+  \begin{split}
+    \Delta G(x, T) &= \Delta H(x, T) - T S(x, T) \\
+		   &= \min _{ y_i ^{2a}  \dots y_m ^{8i} } 
+		   \left[  
+		     \sum_{i j k l m = Fe, Cr} {}
+		   \left[  
+                    y_i^{2a} y_j^{4f} y_k^{8i_1} y_l ^{8i_2} y_m ^{8j}
+                   \right] H_{i j k l m} ^0 
+		   + k_B T \sum_s \dfrac{m_s}{N} \sum_i y_i ^s \ln y_i ^s
+	           \right]
+  \end{split}
+\end{align}
+
+\noindent where the indexes $i, j, k, l, m$ run over the elements Fe and Cr for each of the five sublattices. $H_{i j k l m} ^0$ are the formation enthalpies at 0K of the end-member configurations, $m_s$ are the multiplicities of the sublattices $s = 2\textit{a}, \dots 8\textit{j}$ with $m_s = 2, 4, 8, 8, 8$ respectively, and $N$ is the total number of atoms in the unit cell.
+As this is a well established method, we refer to the original literature for further details.
+We calculate the formation enthalpies $\Delta H_{ijklm}^0$ in reference to the stable ground states of Fe and Cr, 
+
+\begin{equation}
+  \Delta H_{i,j,k,l,m}^0 = E_{i,j,k,l,m}^{\sigma} - \left( x_{i,j,k,l,m}^{Fe} E^{Fe}_{0} + x_{i,j,k,l,m}^{Cr} E^{Cr}_{0} \right)
+\end{equation}
+
+\noindent where $E_{i,j,k,l,m}^{\sigma}$  is the total energy of one unit cell of the \textsigma-phase, $E_{Fe}^{0}$ and $E_{Cr}^{0}$ are the energies per atom of Fe and Cr ground states, respectively, and $x_{i,j,k,l,m}^{Fe}$ and $x_{i,j,k,l,m}^{Cr}$ are the atomic fractions of Fe and Cr in the \textsigma-phase unit cell for the specific configuration.
+The ground state of the constituent elements depend on the magnetic state to be considered. 
+\MFnew{For non spin polarized calculations we consider BCC Cr and HCP Fe, while be BCC is the corresponding ground state for both Fe and Cr for spin polarized calculations.
+
+}
+
+\paragraph{Partial occupancy}\label{methodology:po} To capture the impact of atomic disorder, we explicitly explore all possible atomic arrangements within the \textsigma-phase unit cell, incorporating experimentally reported partial occupancy of WS by Yakel~\cite{yakel_atom_1983} as reproduced in \autoref{fig:PartialOccupancies}.  
 A random distribution in the different sublattices could be modelled for instance by a special quasirandom structure \MFnew{[SQS ref]} but  this would require a big unit cell to generate a meaningful representation of such atomic distributions, in particular due to the small Cr content in the  2\textit{a} site (< 0.5 atom per unit cell).
+\MFnew{
+  In principle, partial occupancy could also be modelled from Monte Carlo molecular dynamics simulation (MDMC). 
+  First, such an approach would also require big unit cells for sufficient statitstics to represent the partial occupancies accurately. 
+  Secondly, the size of those unit cells would also make it difficult to explore elastic constants from DFT. 
+  Alternative approaches like MLIPs could be used to speed up the calculations. Such an alternative will be explored in future works. 
 
-In order to keep the size of the simulation cell to one unit cell, we consider two approximations to the partial occupancy, in both cases disregarding Cr occupation in site 2a and rounding occupancy to integer numbers.  
-A first model keeps full occupancy of Fe in the sites 2\textit{a} and 8\textit{i'}, full Cr occupancy in site 4\textit{f}, but sites 8\textit{i} and 8\textit{j} will have 5 Cr and 3 Fe atoms per unit cell. We name this model PO1. 
+}
+
+In order to keep the size of the simulation to one unit cell, we consider two approximations to the partial occupancy, in both cases disregarding Cr occupation in site 2a and rounding occupancy to integer numbers.  
+A first model keeps full occupancy of Fe in the sites 2\textit{a} and 8\textit{i\textsubscript{2}}, full Cr occupancy in site 4\textit{f}, but sites 8\textit{i\textsubscript{1}} and 8\textit{j} will have 5 Cr and 3 Fe atoms per unit cell. We name this model PO1. 
 In this condition, the total number of possible configurations is $1 \times 1 \times \binom{8}{3} \times 1 \times \binom{8}{3} = 3136 $, all with the same nominal composition and site occupancy.
-A second further transfers one Cr atom from 4\textit{f} to 8\textit{i'}.
+A second further transfers one Cr atom from 4\textit{f} to 8\textit{i\textsubscript{2}}.
 we call this other model PO2.
 The total number of possible configurations now explodes to $ 1 \times 4 \times \binom{8}{3}\times \binom{8}{1} \times \binom{8}{3} \approx 100k $.
 We choose the explained naming convention according to increasing number of possible configurations.
@@ -123,11 +167,49 @@ In both models, the combinatorial explosion of the number of configurations hind
 
 \MFnew{
 In comparison to these partial occupancy models, a sublattice model of the nominal composition of intersest would have a very different site occpancy. 
-As show in \autoref{fig:PartialOccupancies}, there are three possible configurations with nominal composition Fe16Cr14 ($\approx$ 0.53at\% Fe). 
+As show in \autoref{fig:PartialOccupancies}, there are three possible configurations with nominal composition Fe16Cr14 ($\approx$ 52at\% Fe). 
 All of them have site 2\textit{a} filled wih Cr instead of Fe. 
 In addition, only one of the 8\textit{i}, 8\textit{i'} and 8\textit{j} sites would have Cr. 
 This configuration might greatly destabilize the unit cell.
 }
+
+\paragraph{Elastic constants}
+
+The elastic tensor of a tetragonal unit cell can be reduced to 6 independent components.
+In Voigt notation~\cite{golesorkhtabar_elastic_2013}:
+
+\begin{equation}\label{eqn:tetragonalElasticTensor}
+  \begin{pmatrix}
+    C_{11} & C_{12} & C_{13} & 0 & 0 & 0 \\
+    C_{12} & C_{11} & C_{13} & 0 & 0 & 0 \\
+    C_{13} & C_{13} & C_{33} & 0 & 0 & 0 \\
+    0 & 0 & 0 & C_{44} & 0 & 0 \\
+    0 & 0 & 0 & 0 & C_{44} & 0 \\
+    0 & 0 & 0 & 0 & 0 & C_{66} \\
+  \end{pmatrix}
+\end{equation}
+
+In the other hand, the triclinic unit cell has 21 independent components where none of them is necesarily zero or equal to another. 
+This corresponds to the upper triangular part, as the elastic tensor is symmetric by definition.
+
+\begin{equation}\label{eqn:triclinicElasticTensor}
+  \begin{pmatrix}
+    C_{11} & C_{12} & C_{13} & C_{14} & C_{15} & C_{16} \\
+    C_{12} & C_{22} & C_{23} & C_{24} & C_{25} & C_{26} \\
+    C_{13} & C_{23} & C_{33} & C_{34} & C_{35} & C_{36} \\
+    C_{14} & C_{24} & C_{34} & C_{44} & C_{45} & C_{46} \\
+    C_{15} & C_{25} & C_{35} & C_{45} & C_{55} & C_{56} \\
+    C_{16} & C_{26} & C_{36} & C_{46} & C_{56} & C_{66} \\
+  \end{pmatrix}
+\end{equation}
+
+By designing deformation tensors which exploit the symmetry of the unit cell, the elastic tensor components can be determined from a parametrized strain-energy relation \cite{golesorkhtabar_elastic_2013}.
+
+
+In consequence, the same amount of parametrized deformations should be applied.
+In addition, for each deformation tensor enough parameters should be applied as to determine each of the elastic tensor components after a least squares fit.
+This makes the determination of the elastic tensor of the non-symmetrical triclinic unit cell unfeasible in the whole configurational space.
+
 
 \begin{figure}[h!]
   
@@ -152,7 +234,7 @@ However, the calculation of complex properties like the elastic tensor and the c
 \MFnew{fine tuning or fitting as complementary tool}
 \vspace{1cm}
 
-Here we propose a combined DFT / machine learning interatomic potential (MLIP) approach to reduce the combinatorial sampling to the most relevant configurations, i.e. those with the lowest formation enthalpy.
+Here we perform a combined DFT / machine learning interatomic potential (MLIP) approach to reduce the combinatorial sampling to the most relevant configurations, i.e. those with the lowest formation enthalpy.
 As a first step, we select a subset of 25 representative configurations of each model and calculate their optimized unit cell and their elastic constants using DFT. 
 We extend the resulting dataset to build a a specialized Fe-Cr \textsigma-phase DFT dataset consisting of 
 
@@ -176,37 +258,20 @@ Upon decoration, all the configurations acquire a triclinic unit cell with space
 The cell vector lengths\MFmarginpar{**}{}{This is still missing} and angles of the optimized triclinic cells are shown in \autoref{fig:SymmetryConsiderations} for all the configurations.  
 Although small, the introduced structural variations might affect the mechanical properties of the \textsigma-phase. 
 
-\MFnew{The compound energy formalism (CEF) considers the so-called end member formation enthalpies at 0K, for us the formation entlapies of the all the configurations of the sublattice model, to calculate the Gibbs free energy as a function of the composition and temperature. } 
-\MFnew{[missing refs Dupin and Fries]}
-\MFnew{The problem can be posed as an optimization of the occupancies 
-  y \textsubscript{i} \textsuperscript{s} defined as the fraction of element i in the lattice site s.
-} 
+\paragraph{phase stability}\MFmarginpar{*}{}{include validation point}
+The calculated convex hull for the full occupancy samples and both models with partial occupancy is shown in \autoref{subfig:FormationEnergies}. 
+The formation enthalpies at 0K (DFT) of the \textsigma-phase are possitive for all compositions. 
+However, CEF results show that the \textsigma-phase becomes stable starting at 873K, although the composition seems to be shifted towards the Cr rich region.
+In the other hand, at the composition of interest, introducing partial occupancy stabilizes the phase as several samples have a formation enthalpy below the tie-line of the full-occupancy convex hull. 
+In contrast, the samples at the same composition but within the sublattice model (FO1, FO2 and FO3)  lay tens of meV/at avobe the convex hull tie line.
+No direct correlation between the formation enthalpy and unit cell distoritions is observed within the chosen samples.
 
-\begin{equation}\label{eqn:occupancy}
-  y_i ^s = \dfrac{N_i ^s}{\sum _j N_j ^s}
-\end{equation}
+\MFnew{The formation enthalpies of the PO1 set approaches the Gibbs free energies from the CEF at 0K, even for our limited selection of samples, and to the moment we dont find any sample with energies below this limit.
+This might be due to the lack of electronic and vibrational contributions to he Gibbs free energies.
+Those aspects might be studied in future works. 
+}
 
-\noindent  such that the weighted Gibbs free energy is minimized at finite temperature \cite{zhang_prediction_2025}:
-
-\begin{align}\label{eqn:CEF}
-  \begin{split}
-    \Delta G(x, T) &= \Delta H(x, T) - T S(x, T) \\
-		   &= \min _{ y_i ^{2a}  \dots y_m ^{8i} } 
-		   \left[  
-		     \sum_{i j k l m = Fe, Cr} {}
-		   \left[  
-                    y_i^{2a} y_j^{4f} y_k^{8i_1} y_l ^{8i_2} y_m ^{8j}
-                   \right] H_{i j k l m} ^0 
-		   + k_B T \sum_s \dfrac{m_s}{N} \sum_i y_i ^s \ln y_i ^s
-	           \right]
-  \end{split}
-\end{align}
-
-
-
-
-
-in \autoref{subfig:FormationEnergies} we show the results from the CEF in comparison to the calculated partial occupancy samples. 
+In \autoref{subfig:FormationEnergies} we show the results from the CEF in comparison to the calculated partial occupancy samples. 
 
 \begin{figure}[H]
   \subcaptionbox{\protect\label{subfig:angle_symmetry_rupture}}{\fbox{\includegraphics[height=4.5cm, trim=0.5cm -0.25cm 0.5cm -0.25cm, clip]{Figure_alfa_gamma_plots.pdf}}} %
@@ -221,15 +286,11 @@ in \autoref{subfig:FormationEnergies} we show the results from the CEF in compar
     }
 \end{figure}
 
-The formation enthalpies of the PO1 set approaches the Gibbs free energies from the CEF at 0K, even for our limited selection of samples, and to the moment we dont find any sample with energies below this limit. 
-In the other hand, the CEF at 873K shows a first crossing of the $\Delta E_f$ = 0 limit of stability, although the compositions are still shifted towards the Cr rich region. 
-This might be due to the lack of electronic and vibrational contributions to he Gibbs free energies.
-Those aspects might be studied in future works. 
 
 \paragraph{fitting of GRACE}
 After this first the DFT calculations set (DFT0) we fit a GRACE \MFnewMissRef potential.
-Here we intend to use this potential in a screening tool to scan the full configurational space and select the most relevant configurations for further DFT calculations, but it does not necesarilly need to be highly accurate. 
-The DFT extended DFT dataset is ilustrated in \autoref{fig:DFTDataset}, while the final potential performance is reported in \autoref{tab:MLIPPerformance}.
+Here we intend to use this potential as a screening tool to scan the full configurational space and select the most relevant configurations for further DFT calculations, but it does not necesarilly need to be highly accurate. 
+The DFT extended dataset is ilustrated in \autoref{fig:DFTDataset} together with a diagram of our workflow, while the final potential performance is reported in \autoref{tab:MLIPPerformance}.
 
 
 \begin{figure}[H]
@@ -262,34 +323,6 @@ The DFT extended DFT dataset is ilustrated in \autoref{fig:DFTDataset}, while th
 	\end{tabular}%
 
 \end{table}
-
-\paragraph{phase stability}\MFmarginpar{*}{}{include validation point}
-The calculated convex hull for the full occupancy samples and both models with partial occupancy is shown in \autoref{subfig:FormationEnergies}. 
-The formation enthalpies of the \textsigma-phase are possitive for all compositions, which indicate that it it could be stabilized by entropy contributions. 
-In the other hand, at the composition of interest, introducing partial occupancy stabilizes the phase as several samples have a formation enthalpy below the tie-line of the full-occupancy convex hull. 
-In contrast, the samples at the same composition but with full occupancy lay several tens of meV/at avobe the convex hull tie line.
-No direct correlation between the formation enthalpy and unit cell distoritions is observed within the chosen samples.
-
-\paragraph{Elastic constants}
-
-The elastic tensor of a tetragonal unit cell can be reduced to 6 independent components.
-In Voigt notation~\cite{golesorkhtabar_elastic_2013}:
-
-\begin{equation}
-  \begin{pmatrix}
-    C_{11} & C_{12} & C_{13} & 0 & 0 & 0 \\
-    C_{12} & C_{11} & C_{13} & 0 & 0 & 0 \\
-    C_{13} & C_{13} & C_{33} & 0 & 0 & 0 \\
-    0 & 0 & 0 & C_{44} & 0 & 0 \\
-    0 & 0 & 0 & 0 & C_{44} & 0 \\
-    0 & 0 & 0 & 0 & 0 & C_{66} \\
-  \end{pmatrix}
-\end{equation}
-
-In the other hand, the triclinic unit cell has 21 independent components where none of them is necesarily zero. 
-In consequence, the same amount of parametrized deformations should be applied.
-In addition, for each deformation tensor enough parameters should be applied as to determine each of the elastic tensor components after a least squares fit.
-This makes the determination of the elastic tensor of the non-symmetrical triclinic unit cell unfeasible in the whole configurational space.
 
 
 \begin{figure}[h!]
@@ -410,6 +443,7 @@ explaining breaking of symmetry by partial occupancies with figures.
 
 This work is a part of the project ”Artificial Intelligence for Intermetallic Materials”–AIIM funded by the Deutsche Forschungsgemeinschaft (DFG No. 505643559). 
 
-\bibliographystyle{naturemag} \bibliography{main.bib}
+%\bibliographystyle{naturemag} 
+\bibliography{main.bib}
 
 \end{document}
